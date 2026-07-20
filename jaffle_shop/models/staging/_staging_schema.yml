@@ -1,0 +1,56 @@
+version: 2
+
+models:
+
+- name: stg_customers
+  description: Table contains customer information.
+  columns:
+    - name: customer_id
+      description: Primary key, one record per customer. 
+      data_tests:
+        - not_null
+        - unique
+    - name: first_name
+      data_tests:
+        - not_null
+    - name: last_name
+      data_tests:
+        - not_null
+
+- name: stg_orders
+  description: Table contains order information with customer id.
+  columns: 
+    - name: order_id
+      description: Primary key, one record per order. 
+      data_tests:
+        - not_null
+        - unique
+    - name: customer_id
+      data_tests:
+        - not_null
+    - name: order_date
+      data_tests:
+        - not_null
+    - name: status
+      data_tests:
+        - accepted_values:
+            arguments:
+              values: ['returned', 'shipped', 'completed', 'placed', 'return_pending']
+
+- name: stg_payments
+  description: Table contains payment information, including the order values. 
+  columns:
+    - name: payment_id
+      description: Primary key, one record per order.
+      data_tests:
+        - not_null
+        - unique
+    - name: order_id
+      data_tests:
+        - not_null
+    - name: payment_method
+      data_tests:
+        - accepted_values:
+            arguments:
+              values: ['coupon', 'gift_card', 'credit_card', 'bank_transfer']
+    - name: amount
