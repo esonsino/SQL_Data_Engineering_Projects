@@ -8,6 +8,6 @@ WITH raw_orders AS (
         {{ 'orders' }}
 )
 
-SELECT * FROM raw_orders;
+SELECT * FROM raw_orders
 
     
