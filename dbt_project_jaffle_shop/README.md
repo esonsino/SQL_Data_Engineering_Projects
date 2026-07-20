@@ -4,7 +4,7 @@
 
 This project is a personal practice environment for building and testing dbt data models locally, without connecting to a cloud data warehouse. It uses the Jaffle Shop dataset (a fictional food delivery company) as the data source.
 
-The goal is to practice the full dbt workflow: loading raw data, building a staging layer, creating fact tables, writing tests, and documenting models.
+The goal is to practice the full dbt workflow: loading raw data, building a staging layer, creating fact tables, mart tables, writing tests, and documenting models.
 
 ## Stack
 
@@ -27,9 +27,12 @@ jaffle_shop/
 │   │   ├── stg_orders.sql
 │   │   ├── stg_payments.sql
 │   │   └── _staging_schema.yml
-│   └── facts/           # Fact tables
-│       ├── fct_orders.sql         # Incremental model
-│       └── fct_customer_orders.sql
+│   ├── facts/           # Fact tables
+│   │   ├── fct_orders.sql              # Incremental model
+│   │   └── fct_customer_orders.sql
+│   └── marts/           # Aggregate mart tables
+│       ├── mart_orders_monthly.sql
+│       └── mart_customer_retention.sql
 ```
 
 ## Lineage
@@ -44,7 +47,9 @@ flowchart LR
     D --> G
     F --> G
 
-    G --> I[fct_customer_orders]
+    G --> H[fct_customer_orders]
+    G --> I[mart_orders_monthly]
+    H --> J[mart_customer_retention]
 ```
 
 ## Data Model
@@ -64,6 +69,10 @@ Cleans and renames raw data. No business logic.
 ### Fact Tables
 - `fct_orders` — one row per order, joins customers and payments. Built as an **incremental model** using the merge strategy.
 - `fct_customer_orders` — one row per customer, aggregated order metrics (total orders, total spent, first and latest order date)
+
+### Mart Tables
+- `mart_orders_monthly` — order count per month
+- `mart_customer_retention` — classifies customers as new or returning based on order count
 
 ## Incremental Model Convention
 
@@ -98,7 +107,7 @@ dbt build --full-refresh
 ## What I Practiced
 
 - Setting up a local dbt project with DuckDB
-- Building a staging → facts model structure
+- Building a staging → facts → marts model structure
 - Writing incremental models with a merge strategy
 - Adding data tests (unique, not_null, accepted_values)
 - Documenting models in YAML
